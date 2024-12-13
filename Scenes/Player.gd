@@ -4,6 +4,7 @@ var speed = 0.0
 const WALK_SPEED = 5.0
 const SPRINT_SPEED = 8.0
 const GROUND_DECELERATION = 0.4
+const AIR_ACCEL = 0.2
 const JUMP_VELOCITY = 4.5
 #TODO: add sensitivity slider in-game
 const SENSITIVITY = 0.003
@@ -49,8 +50,12 @@ func _physics_process(delta: float) -> void:
 	var input_dir := Input.get_vector("left", "right", "up", "down")
 	var direction = (head.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
-		velocity.x = direction.x * speed
-		velocity.z = direction.z * speed
+		if is_on_floor():
+			velocity.x = direction.x * speed
+			velocity.z = direction.z * speed
+		else:
+			velocity.x = move_toward(velocity.x, (WALK_SPEED * direction.x), AIR_ACCEL)
+			velocity.z = move_toward(velocity.z, (WALK_SPEED * direction.z), AIR_ACCEL)
 	else:
 		velocity.x = move_toward(velocity.x, 0, GROUND_DECELERATION)
 		velocity.z = move_toward(velocity.z, 0, GROUND_DECELERATION)
