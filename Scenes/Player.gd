@@ -4,7 +4,19 @@ extends CharacterBody3D
 const SPEED = 5.0
 const GROUND_DECELERATION = 0.4
 const JUMP_VELOCITY = 4.5
+#TODO: add sensitivity slider in-game
+const SENSITIVITY = 0.003
 
+@onready var head = $Head
+@onready var camera = $Head/Camera3D
+
+func _ready():
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+func _unhandled_input(event):
+	if event is InputEventMouseMotion:
+		head.rotate_y(-event.relative.x * SENSITIVITY)
+		camera.rotate_x(-event.relative.y * SENSITIVITY)
 
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
@@ -17,6 +29,7 @@ func _physics_process(delta: float) -> void:
 
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
+	# TODO: Add controller support and allow players to rebind buttons
 	var input_dir := Input.get_vector("left", "right", "up", "down")
 	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
